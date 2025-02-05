@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.4;
 
-import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
+import {JokerToken} from "./JokerToken.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-contract TokenVault {
+contract TokenVault is Ownable{
 
     // Variables Globales
+    JokerToken public token;
     mapping(address => uint256) public balances;
     mapping(address => uint256) public starts;
 
@@ -17,6 +19,11 @@ contract TokenVault {
     error INSUFFICIENT_AMOUNT(uint256);
     error USER_ALREADY_DEPOSIT(address);
     error INSUFFICIENT_BALANCE();
+
+
+    constructor(address _token) Ownable(msg.sender) {
+        token = JokerToken(_token);
+    }
 
     // Fonction de dépôt
     function deposit(address user, uint256 amount) external {
@@ -48,7 +55,7 @@ contract TokenVault {
 
         // Si le contrat a des fonds en ETH ou autres tokens, les envoyer à l'utilisateur
         // Si c'est un contrat ERC20, vous pouvez appeler la fonction `transfer` sur le token.
-        payable(user).transfer(amount);
+        token.transfer(user,amount);
     }
 
     // Fonction pour obtenir le solde en ETH du contrat
